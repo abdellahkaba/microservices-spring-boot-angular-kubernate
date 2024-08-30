@@ -16,3 +16,46 @@ springdoc:
     path: /swagger-ui.html
   api-docs:
     path: /api-docs
+###
+inventory:
+  service:
+    url: http://localhost:8082
+
+###
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      inventory:
+        registerHealthIndicator: true
+        event-consumer-buffer-size: 10
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 5s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        minimum-number-of-calls: 5
+
+  timelimiter:
+    instances:
+      inventory:
+        timeout-duration: 3s
+
+  retry:
+    instances:
+      inventory:
+        max-attempts: 3
+        wait-duration: 5s
