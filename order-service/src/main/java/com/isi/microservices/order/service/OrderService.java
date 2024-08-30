@@ -2,10 +2,12 @@ package com.isi.microservices.order.service;
 
 import com.isi.microservices.order.client.InventoryClient;
 import com.isi.microservices.order.dto.OrderRequest;
+import com.isi.microservices.order.event.OrderPlacedEvent;
 import com.isi.microservices.order.model.Order;
 import com.isi.microservices.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -18,6 +20,7 @@ public class OrderService {
 
     private final OrderRepository repository;
     private final InventoryClient client ;
+    private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
     public void placeOrder(OrderRequest request){
         var isProductInStock = client.isInStock(request.skuCode(), request.quantity()) ;
         if (isProductInStock){
@@ -29,6 +32,11 @@ public class OrderService {
             order.setQuantity(request.quantity());
             // save in repository
             repository.save(order) ;
+            //Send the message to kafka
+            OrderPlacedEvent orderPlacedEvent = new OrderPlacedEvent(order.getOrderNumber(), request.userDetails().email());
+            log.info("Début - Envoi de OrderPlacedEvent {} au sujet Kafka commandé", orderPlacedEvent);
+            kafkaTemplate.send("order-placed", orderPlacedEvent);
+            log.info("Fin - Envoi de OrderPlacedEvent {} au sujet Kafka commandé", orderPlacedEvent);
         }else {
             throw new RuntimeException("Product avec SkuCode " + request.skuCode()+ " non disponible");
         }

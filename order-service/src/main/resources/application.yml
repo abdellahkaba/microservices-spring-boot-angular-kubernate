@@ -8,6 +8,17 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+  kafka:
+    bootstrap-servers: localhost:9092
+    template:
+      default-topic: order-placed
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  #      properties:
+  #        schema:
+  #          registry:
+  #            url: http://127.0.0.1:8085
 server:
   port: 8081
 
@@ -59,3 +70,4 @@ resilience4j:
       inventory:
         max-attempts: 3
         wait-duration: 5s
+
