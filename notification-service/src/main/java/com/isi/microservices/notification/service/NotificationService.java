@@ -33,7 +33,14 @@ public class NotificationService {
             messageHelper.setSubject(String.format("Votre commande avec le numéro de commande %s a été passée avec succès", orderPlacedEvent.getOrderNumber()));
             messageHelper.setText(String.format(
                     "<p>Salut,</p><p>Votre commande portant le numéro de commande %s a maintenant été passée avec succès.</p><p>Cordialement,<br/>Boutique de Bonfi saoudi</p>",
-                    orderPlacedEvent.getOrderNumber()), true);
+                    orderPlacedEvent.getOrderNumber(),
+                    orderPlacedEvent.getSkuCode(),
+                    orderPlacedEvent.getPrice(),
+                    orderPlacedEvent.getQuantity(),
+                    orderPlacedEvent.getFirstName(),
+                    orderPlacedEvent.getLastName(),
+                    orderPlacedEvent.getEmail()
+            ), true);
         };
 
         try {

@@ -33,7 +33,14 @@ public class OrderService {
             // save in repository
             repository.save(order) ;
             //Send the message to kafka
-            OrderPlacedEvent orderPlacedEvent = new OrderPlacedEvent(order.getOrderNumber(), request.userDetails().email());
+            OrderPlacedEvent orderPlacedEvent = new OrderPlacedEvent(
+                    order.getOrderNumber(),
+                    order.getSkuCode(),
+                    order.getPrice(),
+                    order.getQuantity(),
+                    request.userDetails().email(),
+                    request.userDetails().firstName(),
+                    request.userDetails().lastName());
             log.info("Début - Envoi de OrderPlacedEvent {} au sujet Kafka commandé", orderPlacedEvent);
             kafkaTemplate.send("order-placed", orderPlacedEvent);
             log.info("Fin - Envoi de OrderPlacedEvent {} au sujet Kafka commandé", orderPlacedEvent);
