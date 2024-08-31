@@ -46,6 +46,19 @@ management:
     health:
       show-details: always
 
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: true
+  observations:
+    key-values:
+      application: order-service
+  tracing:
+    sampling:
+      probability: 1.0
+
 resilience4j:
   circuitbreaker:
     instances:
@@ -70,4 +83,7 @@ resilience4j:
       inventory:
         max-attempts: 3
         wait-duration: 5s
+
+
+
 
